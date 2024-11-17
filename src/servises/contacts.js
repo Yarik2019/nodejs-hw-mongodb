@@ -9,5 +9,3 @@ export const getContactById = async (contactId) => {
   const contact = await ContactsColection.findById(contactId);
   return contact;
 };
-
-// MONGODB_URL=contacts.5yvgg.mongodb.net;
