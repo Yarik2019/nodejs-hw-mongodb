@@ -5,7 +5,6 @@ import cors from 'cors';
 
 import { env } from './utils/env.js';
 import { getAllContcats, getContactById } from './servises/contacts.js';
-
 const PORT = Number(env('PORT', '3000'));
 
 export const setupServer = () => {
@@ -21,7 +20,7 @@ export const setupServer = () => {
 
   app.get('/contacts', async (req, res) => {
     const contacts = await getAllContcats();
-    console.log(contacts);
+
     res.send({
       status: 200,
       message: 'Successfully found contacts!',
@@ -35,7 +34,9 @@ export const setupServer = () => {
     const contact = await getContactById(contactId);
 
     if (!contact) {
-      return res.status(404).send({ message: 'Contact not found' });
+      return res
+        .status(404)
+        .send({ status: 404, message: 'Contact not found' });
     }
 
     res.send({
@@ -47,6 +48,11 @@ export const setupServer = () => {
 
   app.use('*', (req, res, next) => {
     res.status(404).send({ status: 404, message: 'Route not found' });
+  });
+
+  app.use((error, req, res, next) => {
+    console.error(error);
+    res.status(500).send({ status: 500, message: 'Internal server error' });
   });
 
   app.listen(PORT, () => {
