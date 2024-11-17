@@ -2,12 +2,12 @@ import express from 'express';
 import pinoHttp from 'pino-http';
 import pino from 'pino';
 import cors from 'cors';
-import dotenv from 'dotenv';
+
+import { env } from './utils/env.js';
 
 import { getAllContcats, getContactById } from './servises/contacts.js';
 
-console.log(process.env);
-const PORT = process.env.PORT || 3000;
+const PORT = Number(env('PORT', '3000'));
 
 export const setupServer = () => {
   const app = express();
@@ -61,4 +61,3 @@ export const setupServer = () => {
     console.log(`Server is running on ${PORT}`);
   });
 };
-dotenv.config();
