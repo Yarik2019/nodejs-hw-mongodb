@@ -2,17 +2,12 @@ import express from 'express';
 import pinoHttp from 'pino-http';
 import pino from 'pino';
 import cors from 'cors';
-import dotenv from 'dotenv';
 
+import { env } from './utils/env.js';
 import { getAllContcats, getContactById } from './servises/contacts.js';
-// import { env } from './utils/env.js';
-const PORT = process.env.PORT || 3000;
 
-// async function ft() {
-//   const res = await getContactById('673a471ccfb47cb358741ee6');
-//   console.log(res);
-// }
-// ft();
+const PORT = Number(env('PORT', '3000'));
+
 export const setupServer = () => {
   const app = express();
 
@@ -58,4 +53,3 @@ export const setupServer = () => {
     console.log(`Server is running on ${PORT}`);
   });
 };
-dotenv.config();
