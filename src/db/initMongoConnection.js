@@ -11,20 +11,11 @@ export const initMongoConnection = async () => {
     // await mongoose.connect(
     //   `mongodb+srv://${user}:${pwd}@${url}/${db}?retryWrites=true&w=majority`,
     // );
-<<<<<<< HEAD
-
     const user = 'ciba873';
     const pwd = 'RXY9w47Lu8rFJqZb';
     const url = 'contacts.5yvgg.mongodb.net';
     const db = 'contacts';
     await mongoose.connect(
-=======
-      const user = "ciba873";
-      const pwd ="RXY9w47Lu8rFJqZb"
-      const url = "contacts.5yvgg.mongodb.net"
-      const db = "contacts"
-     await mongoose.connect(
->>>>>>> 55b02191259127b572bc2b68bba2007604a054b4
       `mongodb+srv://${user}:${pwd}@${url}/${db}?retryWrites=true&w=majority`,
     );
 
