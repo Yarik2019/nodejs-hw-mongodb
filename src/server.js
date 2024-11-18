@@ -4,7 +4,7 @@ import pino from 'pino';
 import cors from 'cors';
 
 import { getAllContcats, getContactById } from './servises/contacts.js';
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 export const setupServer = () => {
   const app = express();
