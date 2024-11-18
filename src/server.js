@@ -5,6 +5,7 @@ import cors from 'cors';
 
 import { getAllContcats, getContactById } from './servises/contacts.js';
 const PORT = process.env.PORT || 3000;
+
 export const setupServer = () => {
   const app = express();
 
