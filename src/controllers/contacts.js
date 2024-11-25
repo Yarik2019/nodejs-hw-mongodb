@@ -1,4 +1,3 @@
-// import createHttpError from 'http-errors';
 import createHttpError from 'http-errors';
 import {
   deleteContact,
@@ -6,7 +5,7 @@ import {
   getContactById,
   patchContact,
   postContact,
-} from '../services/contacts';
+} from '../services/contacts.js';
 
 export const getContactsController = async (_req, res) => {
   const contacts = await getAllContcats();
