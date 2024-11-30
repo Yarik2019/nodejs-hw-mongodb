@@ -2,7 +2,7 @@ const parseFilterType = (contactType) => {
   const isString = typeof contactType === 'string';
   if (!isString) return;
   const isType = (contactType) =>
-    ['male', 'female', 'other'].includes(contactType);
+    ['work', 'home', 'personal'].includes(contactType);
 
   if (isType(contactType)) return contactType;
 };
