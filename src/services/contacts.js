@@ -37,8 +37,24 @@ export const getAllContcats = async ({
 export const getContactById = (contactId, user) =>
   ContactsColection.findById({ _id: contactId, userId: user._id });
 
-export const postContact = (contactData) =>
-  ContactsColection.create(contactData);
+export const postContact = async ({
+  name,
+  phoneNumber,
+  email,
+  isFavourite = false,
+  contactType,
+  userId,
+}) => {
+  const contact = new ContactsColection({
+    name,
+    phoneNumber,
+    email,
+    isFavourite,
+    contactType,
+    userId,
+  });
+  return await contact.save();
+};
 
 export const patchContact = (contactId, user, contactData) =>
   ContactsColection.findByIdAndUpdate(

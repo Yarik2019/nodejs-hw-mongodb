@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { ROLES } from '../../constants/constants.js';
+
 const UserSchema = new Schema(
   {
     name: {
@@ -30,4 +31,9 @@ UserSchema.methods.toJSON = function () {
   return obj;
 };
 
-export const UsersColection = model('users', UserSchema);
+export const User = model('users', UserSchema);
+// role: {
+//   type: String,
+//   enum: [ROLES.ADMIN, ROLES.USER],
+//   default: ROLES.USER,
+// },

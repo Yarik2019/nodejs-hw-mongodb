@@ -1,3 +1,4 @@
+import createHttpError from 'http-errors';
 import {
   registerUser,
   loginUser,
@@ -5,19 +6,11 @@ import {
   refreshUsersSession,
 } from '../services/auth.js';
 
-import { ONE_DAY } from '../constants/constants.js';
-import createHttpError from 'http-errors';
+import { THIRTY_DAYS } from '../constants/constants.js';
 
 export const registerUserController = async (req, res) => {
-  const payload = {
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-  };
+  const user = await registerUser(req.body);
 
-  const user = await registerUser(payload);
-
-  console.log(user);
   res.status(201).send({
     status: 201,
     message: 'Successfully registered a user!',
@@ -30,12 +23,12 @@ export const loginUserController = async (req, res) => {
 
   res.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
-    expires: new Date(Date.now() + ONE_DAY),
+    expires: new Date(Date.now() + THIRTY_DAYS),
   });
 
   res.cookie('sessionId', session._id, {
     httpOnly: true,
-    expires: new Date(Date.now() + ONE_DAY),
+    expires: new Date(Date.now() + THIRTY_DAYS),
   });
 
   res.send({
@@ -50,11 +43,11 @@ export const loginUserController = async (req, res) => {
 const setupSession = (res, session) => {
   res.cookie('refreshToken', session.refreshToken, {
     httpOnly: true,
-    expires: new Date(Date.now() + ONE_DAY),
+    expires: new Date(Date.now() + THIRTY_DAYS),
   });
   res.cookie('sessionId', session._id, {
     httpOnly: true,
-    expires: new Date(Date.now() + ONE_DAY),
+    expires: new Date(Date.now() + THIRTY_DAYS),
   });
 };
 
