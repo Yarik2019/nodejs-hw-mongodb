@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import express from 'express';
 import {
   createContactController,
   deleteContactController,
@@ -15,49 +16,38 @@ import {
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { isValidId } from '../middlewares/isValidId.js';
 import { validateBody } from '../middlewares/validateBody.js';
+
 import { authenticate } from '../middlewares/authenticate.js';
-import { checkRoles } from '../middlewares/checkRoles.js';
-import { ROLES } from '../constants/constants.js';
+// import { checkRoles } from '../middlewares/checkRoles.js';
+// import { ROLES } from '../constants/constants.js';
+// console.log(checkRoles(ROLES.ADMIN, ROLES.USER));
+
+const jsonParser = express.json();
 const router = Router();
 
 router.use(authenticate);
-
-router.get(
-  '/',
-  authenticate,
-  checkRoles(ROLES.ADMIN, ROLES.USER),
-  ctrlWrapper(getContactsController),
-);
+router.get('/', ctrlWrapper(getContactsController));
 
 router.get(
   '/:contactId',
-  authenticate,
-  checkRoles(ROLES.ADMIN, ROLES.USER),
+
   isValidId,
   ctrlWrapper(getContactByIdController),
 );
 
 router.post(
-  '/contacts',
-  authenticate,
-  checkRoles(ROLES.ADMIN, ROLES.USER),
+  '/',
+  jsonParser,
   validateBody(createContactSchema),
   ctrlWrapper(createContactController),
 );
 
-router.delete(
-  '/:contactId',
-  authenticate,
-  checkRoles(ROLES.ADMIN, ROLES.USER),
-  isValidId,
-  ctrlWrapper(deleteContactController),
-);
+router.delete('/:contactId', isValidId, ctrlWrapper(deleteContactController));
 
 router.patch(
   '/:contactId',
-  authenticate,
-  checkRoles(ROLES.ADMIN, ROLES.USER),
   isValidId,
+  jsonParser,
   validateBody(updateContactSchema),
   ctrlWrapper(updateContactController),
 );
