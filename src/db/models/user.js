@@ -18,7 +18,7 @@ const UserSchema = new Schema(
     },
     role: {
       type: String,
-      enum: [ROLES.ADMIN, ROLES.USER],
+      enum: [ROLES.USER],
       default: ROLES.USER,
     },
   },
@@ -32,8 +32,9 @@ UserSchema.methods.toJSON = function () {
 };
 
 export const User = model('users', UserSchema);
-// role: {
-//   type: String,
-//   enum: [ROLES.ADMIN, ROLES.USER],
-//   default: ROLES.USER,
-// },
+
+//  role: {
+//       type: String,
+//       enum: [ROLES.ADMIN, ROLES.USER],
+//       default: ROLES.USER,
+//     },
