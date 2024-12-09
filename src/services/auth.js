@@ -1,6 +1,6 @@
-import createHttpError from 'http-errors';
-import bcrypt from 'bcrypt';
 import { randomBytes } from 'crypto';
+import bcrypt from 'bcrypt';
+import createHttpError from 'http-errors';
 
 import { FIFTEEN_MINUTES, THIRTY_DAYS } from '../constants/constants.js';
 
@@ -22,21 +22,14 @@ export const registerUser = async (payload) => {
 
 export const loginUser = async (payload) => {
   const user = await User.findOne({ email: payload.email });
-
   if (!user) {
-    throw createHttpError(
-      404,
-      'Authentication failed. Please check your credentials',
-    );
+    throw createHttpError(404, 'User not found');
   }
+  const isEqual = await bcrypt.compare(payload.password, user.password);
 
-  const isPasswordMatch = await bcrypt.compare(payload.password, user.password);
-
-  if (!isPasswordMatch)
-    throw createHttpError(
-      401,
-      'Authentication failed. Please check your credentials',
-    );
+  if (!isEqual) {
+    throw createHttpError(401, 'Unauthorized');
+  }
 
   await Session.deleteOne({ userId: user._id });
 
@@ -83,10 +76,7 @@ export const refreshUsersSession = async ({ sessionId, refreshToken }) => {
 
   const newSession = createSession();
 
-  await Session.deleteOne({
-    _id: sessionId,
-    refreshToken: refreshToken,
-  });
+  await Session.deleteOne({ _id: sessionId, refreshToken });
 
   return await Session.create({
     userId: session.userId,
@@ -94,9 +84,6 @@ export const refreshUsersSession = async ({ sessionId, refreshToken }) => {
   });
 };
 
-export const logoutUser = async (sessionId, refreshToken) => {
-  await Session.deleteOne({
-    _id: sessionId,
-    refreshToken: refreshToken,
-  });
+export const logoutUser = async (sessionId) => {
+  await User.deleteOne({ _id: sessionId });
 };

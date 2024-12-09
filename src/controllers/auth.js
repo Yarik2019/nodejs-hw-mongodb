@@ -1,4 +1,3 @@
-import createHttpError from 'http-errors';
 import {
   registerUser,
   loginUser,
@@ -9,12 +8,17 @@ import {
 import { THIRTY_DAYS } from '../constants/constants.js';
 
 export const registerUserController = async (req, res) => {
-  const user = await registerUser(req.body);
+  const payload = {
+    name: req.body.name,
+    email: req.body.email,
+    password: req.body.password,
+  };
+  const registeredUser = await registerUser(payload);
 
   res.status(201).send({
     status: 201,
     message: 'Successfully registered a user!',
-    data: user,
+    data: registeredUser,
   });
 };
 
@@ -25,19 +29,29 @@ export const loginUserController = async (req, res) => {
     httpOnly: true,
     expires: new Date(Date.now() + THIRTY_DAYS),
   });
-
   res.cookie('sessionId', session._id, {
     httpOnly: true,
     expires: new Date(Date.now() + THIRTY_DAYS),
   });
 
-  res.send({
+  res.status(200).send({
     status: 200,
     message: 'Successfully logged in an user!',
     data: {
       accessToken: session.accessToken,
     },
   });
+};
+
+export const logoutUserController = async (req, res) => {
+  if (req.cookies.sessionId) {
+    await logoutUser(req.cookies.sessionId);
+  }
+
+  res.clearCookie('sessionId');
+  res.clearCookie('refreshToken');
+
+  res.status(204).send();
 };
 
 const setupSession = (res, session) => {
@@ -66,18 +80,4 @@ export const refreshUserSessionController = async (req, res) => {
       accessToken: session.accessToken,
     },
   });
-};
-
-export const logoutUserController = async (req, res) => {
-  const { sessionId, refreshToken } = req.cookies;
-
-  if (!sessionId && !refreshToken)
-    throw createHttpError(404, 'Session not found');
-
-  await logoutUser(req.cookies.sessionId);
-
-  res.clearCookie('sessionId');
-  res.clearCookie('refreshToken');
-
-  res.status(204).send();
 };
