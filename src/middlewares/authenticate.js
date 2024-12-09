@@ -7,7 +7,7 @@ export const authenticate = async (req, res, next) => {
   const authHeader = req.get('Authorization');
 
   if (!authHeader) {
-    next(createHttpError(401, 'Please provide Authorization header'));
+    next(createHttpError(401, 'The authorization header is missing'));
     return;
   }
 
@@ -31,12 +31,13 @@ export const authenticate = async (req, res, next) => {
 
   if (isAccessTokenExpired) {
     next(createHttpError(401, 'Access token expired'));
+    return;
   }
 
   const user = await User.findById(session.userId);
 
   if (!user) {
-    next(createHttpError(401));
+    next(createHttpError(401, 'User not found'));
     return;
   }
 
