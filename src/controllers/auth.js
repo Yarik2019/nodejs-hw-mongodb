@@ -4,7 +4,7 @@ import {
   logoutUser,
   refreshUsersSession,
 } from '../services/auth.js';
-
+import createHttpError from 'http-errors';
 import { THIRTY_DAYS } from '../constants/constants.js';
 
 export const registerUserController = async (req, res) => {
@@ -44,10 +44,14 @@ export const loginUserController = async (req, res) => {
 };
 
 export const logoutUserController = async (req, res) => {
-  if (req.cookies.sessionId) {
-    await logoutUser(req.cookies.sessionId);
+  const sessionid = req.cookies.sessionId;
+  if (sessionid) {
+    await logoutUser(sessionid);
   }
 
+  if (!sessionid) {
+    throw createHttpError(401, 'Session not found');
+  }
   res.clearCookie('sessionId');
   res.clearCookie('refreshToken');
 
