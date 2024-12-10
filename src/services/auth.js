@@ -84,12 +84,6 @@ export const refreshUsersSession = async ({ sessionId, refreshToken }) => {
   });
 };
 
-export const logoutUser = async (sessionId) => {
-  await Session.findOneAndUpdate(
-    { sessionId },
-    { isActive: false }, // Позначаємо сесію як неактивну
-    { new: true },
-  );
-
-  await User.deleteOne({ _id: sessionId });
+export const logoutUser = async (sessionId, refreshToken) => {
+  await Session.deleteOne({ _id: sessionId, refreshToken });
 };

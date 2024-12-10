@@ -29,6 +29,7 @@ export const loginUserController = async (req, res) => {
     httpOnly: true,
     expires: new Date(Date.now() + THIRTY_DAYS),
   });
+
   res.cookie('sessionId', session._id, {
     httpOnly: true,
     expires: new Date(Date.now() + THIRTY_DAYS),
@@ -44,19 +45,17 @@ export const loginUserController = async (req, res) => {
 };
 
 export const logoutUserController = async (req, res) => {
-  const sessionid = req.cookies.sessionId;
-  if (sessionid) {
-    await logoutUser(sessionid);
-  }
+  const { sessionId, refreshToken } = req.cookies;
 
-  if (!sessionid) {
+  if (!sessionId && !refreshToken)
     throw createHttpError(401, 'Session not found');
-  }
+
+  await logoutUser(sessionId, refreshToken);
 
   res.clearCookie('sessionId');
   res.clearCookie('refreshToken');
 
-  res.status(204).send();
+  res.status(204).end();
 };
 
 const setupSession = (res, session) => {
@@ -64,6 +63,7 @@ const setupSession = (res, session) => {
     httpOnly: true,
     expires: new Date(Date.now() + THIRTY_DAYS),
   });
+
   res.cookie('sessionId', session._id, {
     httpOnly: true,
     expires: new Date(Date.now() + THIRTY_DAYS),
