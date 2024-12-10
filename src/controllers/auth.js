@@ -52,6 +52,7 @@ export const logoutUserController = async (req, res) => {
   if (!sessionid) {
     throw createHttpError(401, 'Session not found');
   }
+
   res.clearCookie('sessionId');
   res.clearCookie('refreshToken');
 
