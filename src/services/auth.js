@@ -2,10 +2,21 @@ import { randomBytes } from 'crypto';
 import bcrypt from 'bcrypt';
 import createHttpError from 'http-errors';
 
-import { FIFTEEN_MINUTES, THIRTY_DAYS } from '../constants/constants.js';
+import handlebars from 'handlebars';
+import path from 'node:path';
+import fs from 'node:fs/promises';
+
+import {
+  FIFTEEN_MINUTES,
+  TEMPLATES_DIR,
+  THIRTY_DAYS,
+} from '../constants/constants.js';
 
 import { Session } from '../db/models/session.js';
 import { User } from '../db/models/user.js';
+
+import jwt from 'jsonwebtoken';
+// import { sendEmail } from '../utils/sendMail.js';
 
 export const registerUser = async (payload) => {
   const user = await User.findOne({ email: payload.email });
@@ -86,4 +97,76 @@ export const refreshUsersSession = async ({ sessionId, refreshToken }) => {
 
 export const logoutUser = async (sessionId) => {
   await User.deleteOne({ _id: sessionId });
+};
+
+export const requestResetToken = async (email) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw createHttpError(404, 'User not found');
+  }
+
+  const resetToken = jwt.sign(
+    {
+      sub: user._id,
+      email: user.email,
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: '15m',
+    },
+  );
+
+  // console.log(env(SMTP.SMTP_FROM));
+  console.log(`http://localhost:3000/reset-password?token=${resetToken}`);
+
+  const resetPasswordTemplatePath = path.join(
+    TEMPLATES_DIR,
+    'reset-password-email.html',
+  );
+
+  const templateSource = (
+    await fs.readFile(resetPasswordTemplatePath)
+  ).toString();
+
+  const template = handlebars.compile(templateSource);
+  const html = template({
+    name: user.name,
+    link: `${process.env.APP_DOMAIN}/reset-password?token=${resetToken}`,
+  });
+  html;
+  console.log(html);
+
+  // await sendEmail({
+  //   from: process.env.SMTP_FROM,
+  //   to: user.email,
+  //   subject: 'Reset your password',
+  //   html,
+  // });
+};
+
+export const resetPassword = async (payload) => {
+  let entries;
+
+  try {
+    entries = jwt.verify(payload.token, process.env.JWT_SECRET);
+  } catch (err) {
+    if (err instanceof Error) throw createHttpError(401, err.message);
+    throw err;
+  }
+
+  const user = await User.findOne({
+    _id: entries.sub,
+    email: entries.email,
+  });
+
+  if (!user) {
+    throw createHttpError(404, 'User not found');
+  }
+
+  const encryptedPassword = await bcrypt.hash(payload.password, 10);
+
+  await User.findByIdAndUpdate(
+    { _id: user._id },
+    { password: encryptedPassword },
+  );
 };
