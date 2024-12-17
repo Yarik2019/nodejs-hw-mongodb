@@ -3,8 +3,10 @@ import {
   loginUser,
   logoutUser,
   refreshUsersSession,
+  requestResetToken,
+  resetPassword,
 } from '../services/auth.js';
-import createHttpError from 'http-errors';
+
 import { THIRTY_DAYS } from '../constants/constants.js';
 
 export const registerUserController = async (req, res) => {
@@ -29,7 +31,6 @@ export const loginUserController = async (req, res) => {
     httpOnly: true,
     expires: new Date(Date.now() + THIRTY_DAYS),
   });
-
   res.cookie('sessionId', session._id, {
     httpOnly: true,
     expires: new Date(Date.now() + THIRTY_DAYS),
@@ -45,17 +46,14 @@ export const loginUserController = async (req, res) => {
 };
 
 export const logoutUserController = async (req, res) => {
-  const { sessionId, refreshToken } = req.cookies;
-
-  if (!sessionId && !refreshToken)
-    throw createHttpError(401, 'Session not found');
-
-  await logoutUser(sessionId, refreshToken);
+  if (req.cookies.sessionId) {
+    await logoutUser(req.cookies.sessionId);
+  }
 
   res.clearCookie('sessionId');
   res.clearCookie('refreshToken');
 
-  res.status(204).end();
+  res.status(204).send();
 };
 
 const setupSession = (res, session) => {
@@ -63,7 +61,6 @@ const setupSession = (res, session) => {
     httpOnly: true,
     expires: new Date(Date.now() + THIRTY_DAYS),
   });
-
   res.cookie('sessionId', session._id, {
     httpOnly: true,
     expires: new Date(Date.now() + THIRTY_DAYS),
@@ -84,5 +81,23 @@ export const refreshUserSessionController = async (req, res) => {
     data: {
       accessToken: session.accessToken,
     },
+  });
+};
+
+export const requestResetEmailController = async (req, res) => {
+  await requestResetToken(req.body.email);
+  res.send({
+    message: 'Reset password email was successfully sent!',
+    status: 200,
+    data: {},
+  });
+};
+
+export const resetPasswordController = async (req, res) => {
+  await resetPassword(req.body);
+  res.send({
+    message: 'Password was successfully reset!',
+    status: 200,
+    data: {},
   });
 };
