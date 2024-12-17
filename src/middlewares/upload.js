@@ -1,10 +1,9 @@
-import path from 'node:path';
-
 import multer from 'multer';
+import { TEMP_UPLOAD_DIR } from '../constants/constants.js';
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.resolve('src', 'tmp'));
+    cb(null, TEMP_UPLOAD_DIR);
   },
   filename: function (req, file, cb) {
     const uniquePrefix = Date.now() + '-' + Math.round(Math.random() * 1e9);
