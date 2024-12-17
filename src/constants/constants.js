@@ -1,4 +1,5 @@
 import path from 'node:path';
+// import fs from 'node:fs/promises';
 
 export const SORT_ORDER = {
   ASC: 'asc',
@@ -22,7 +23,12 @@ export const SMTP = {
 };
 
 export const TEMPLATES_DIR = path.join(process.cwd(), 'src', 'templates');
-export const TEMP_UPLOAD_DIR = path.join(process.cwd(), 'temp');
+
+const isProduction = process.env.NODE_ENV === 'production';
+export const TEMP_UPLOAD_DIR = isProduction
+  ? path.join('/opt/render/project/src', 'src', 'temp') // For Render
+  : path.join(process.cwd(), 'src', 'temp');
+// export const TEMP_UPLOAD_DIR = path.join(process.cwd(), 'temp');
 export const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
 
 export const CLOUDINARY = {
