@@ -20,6 +20,7 @@ import { sendEmail } from '../utils/sendMail.js';
 
 import { SMTP } from '../constants/constants.js';
 import { env } from '../utils/env.js';
+
 import {
   getFullNameFromGoogleTokenPayload,
   validateCode,
