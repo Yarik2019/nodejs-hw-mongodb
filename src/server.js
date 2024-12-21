@@ -1,9 +1,8 @@
 import express from 'express';
 import pino from 'pino-http';
-// import pino from 'pino';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-// import ContactsRouter from './routers/contacts.js';
+
 import router from './routers/index.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
