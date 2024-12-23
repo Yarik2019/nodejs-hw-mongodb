@@ -198,7 +198,6 @@
                 "required": [
                   "name",
                   "phoneNumber",
-                  "isFavourite",
                   "contactType"
                 ],
                 "properties": {
